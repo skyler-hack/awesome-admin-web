@@ -64,13 +64,23 @@ EOF
 )"
 ```
 
-### Step 5：验证
+### Step 5：验证并推送
 
 ```bash
 git status
 ```
 
 确认提交成功；若 hook 修改了文件，按 amend 规则处理或新建提交。
+
+**默认推送到远程**（若已配置 `origin` 且当前分支有 upstream）：
+
+```bash
+git push origin <当前分支>
+```
+
+跳过 push 的情况：用户明确说「只 commit」「先别 push」「不要推送」。
+
+推送后再次 `git status`，确认 `Your branch is up to date with 'origin/...'`。
 
 ## 提交消息格式
 
@@ -96,10 +106,16 @@ git status
 
 **scope**：模块或目录名（如 `auth`、`config`）；项目级改动可用 `awesome-admin-web`。
 
-## 提交后
+## 提交后回报
 
-- **默认不 push**；用户明确要求时才 `git push`
-- 简要回报：commit hash、消息摘要、是否还有未提交变更
+必须区分 **本地 commit** 与 **远程 push**，避免用户误以为 GitHub 已更新：
+
+- commit hash、提交消息摘要
+- push 结果：远程 URL、分支、`ahead` / `up to date` 状态
+- 若 push 失败：说明原因（未登录、无权限、冲突等），不要谎称已同步
+- 是否还有未提交变更
+
+**默认行为**：`commit` 成功后自动 `push` 到 `origin`；仅用户明确要求时才只 commit 不 push。
 
 ## 示例
 
@@ -115,7 +131,8 @@ feat(auth): add JWT login and profile endpoints
 Implement register/login with bcrypt and role-based access control.
 EOF
 )"
-5. git status → 回报结果
+5. git status → git push origin main
+6. 回报：commit `<hash>` 已推送到 origin/main
 ```
 
 **用户**：「提交，用中文描述」
